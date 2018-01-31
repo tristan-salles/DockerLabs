@@ -84,8 +84,10 @@ RUN mkdir /workspace && \
 RUN mv /usr/local/class /workspace
 RUN mv /usr/local/pracs /workspace
 
-# Copy test files to workspace
-#RUN cp -av /build/pyReefCore/Tests /workspace/
+RUN mv /workspace/class /workspace/classroom
+
+RUN cd /workspace/classroom/wavesed && \
+  f2py --f90exec=mpif90 -I. -c -m ocean ocean.f90
 
 COPY run.sh /build
 RUN chmod +x /build/run.sh
