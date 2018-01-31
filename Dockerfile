@@ -69,7 +69,7 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/
 RUN chmod +x /usr/local/bin/tini
 
 # Copy cluster configuration
-RUN mkdir /root/.ipython
+#RUN mkdir /root/.ipython
 #COPY profile_mpi /root/.ipython/profile_mpi
 
 RUN mkdir /workspace && \
@@ -90,3 +90,4 @@ EXPOSE 8888
 ENTRYPOINT ["/usr/local/bin/tini", "--"]
 
 ENV LD_LIBRARY_PATH=/workspace/volume/pyReefCore/pyReefCore/libUtils:/build/pyReefCore/pyReefCore/libUtils
+CMD /build/run.sh
