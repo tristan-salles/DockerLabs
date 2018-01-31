@@ -17,24 +17,21 @@ WORKDIR /build
 RUN git clone https://github.com/pyReef-model/pyReefCore.git
 RUN pip install -e /build/pyReefCore
 
-COPY  COVE /usr/local/
+RUN mkdir /usr/local/COVE
+RUN ls -la /usr/local/
+
+COPY  COVE/ /usr/local/COVE/
 
 RUN ls -la /usr/local/
 
 RUN ls -la /usr/local/COVE
+
 RUN cd /usr/local/COVE/driver_files && \
   make -f spiral_bay_make.make && \
   mv spiral_bay.out cove && \
   mv cove /usr/local/bin
 
-RUN cd /usr/local && \
-  wget http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-4.1.3.tar.gz && \
-  tar -xf netcdf-4.1.3.tar.gz && \
-  cd netcdf-4.1.3 && \
-  CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure --enable-separate-fortran --enable-netcdf-4 --enable-shared --enable-dap --prefix=/usr/local && \
-  make && \
-  make install && \
-  cp /usr/local/include/NETCDF.mod /usr/local/include/netcdf.mod
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   automake \
@@ -42,9 +39,24 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   libtool \
   shtool \
   autogen \
-  mako
+  wget
 
-COPY  xbeach /usr/local
+RUN pip install mako
+
+RUN cd /usr/local && \
+  wget http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-4.1.3.tar.gz && \
+  tar -xf netcdf-4.1.3.tar.gz && \
+  cd netcdf-4.1.3 && \
+  CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure --enable-separate-fortran --enable-netcdf-4 --enable-shared --enable-dap --prefix=/usr/local && \
+  make && \
+  make install
+
+RUN ls -la /usr/local/include
+
+RUN mkdir /usr/local/xbeach
+
+COPY  xbeach/ /usr/local/xbeach/
+
 RUN cd /usr/local/xbeach && \
   sh autogen.sh && \
   ./configure --with-netcdf && \
