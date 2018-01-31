@@ -72,8 +72,17 @@ RUN chmod +x /usr/local/bin/tini
 #RUN mkdir /root/.ipython
 #COPY profile_mpi /root/.ipython/profile_mpi
 
+RUN mkdir /usr/local/class
+COPY class/ /usr/local/class/
+
+RUN mkdir /usr/local/pracs
+COPY practicals/ /usr/local/pracs/
+
 RUN mkdir /workspace && \
     mkdir /workspace/volume
+
+RUN mv /usr/local/class /workspace
+RUN mv /usr/local/pracs /workspace
 
 # Copy test files to workspace
 #RUN cp -av /build/pyReefCore/Tests /workspace/
