@@ -17,7 +17,11 @@ WORKDIR /build
 RUN git clone https://github.com/pyReef-model/pyReefCore.git
 RUN pip install -e /build/pyReefCore
 
-COPY  COVE /usr/local
+COPY  COVE /usr/local/
+
+RUN ls -la /usr/local/
+
+RUN ls -la /usr/local/COVE
 RUN cd /usr/local/COVE/driver_files && \
   make -f spiral_bay_make.make && \
   mv spiral_bay.out cove && \
