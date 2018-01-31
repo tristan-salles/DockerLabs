@@ -1,0 +1,14 @@
+*.pyc
+*.sublime-*
+*.so
+pyBadlands.egg-info/
+*.mod
+*.o
+.ipynb_checkpoints
+.AppleDouble
+__MACOSX
+.DS_Store
+*.dSYM
+doc/_build/
+tags
+doc/env/
