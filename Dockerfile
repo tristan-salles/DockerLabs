@@ -84,6 +84,8 @@ RUN chmod +x /build/run.sh
 # setup space for working in
 VOLUME /workspace/volume
 
+RUN pip install git+https://github.com/jakevdp/JSAnimation.git
+
 # launch notebook
 WORKDIR /workspace
 EXPOSE 8888
