@@ -35,10 +35,10 @@ module params
       !  type                                name                     initialize           !  [unit] (advanced/deprecated) description
       ! [Section] Use of default sets
       integer                           :: useXBeachGSettings       = -123                 !  [-] (advanced) Use XBeach-G default settings for all non-specified parameters
-      
+
       ! [Section] Physical processes
       integer                             :: wavemodel              = -123                  !  [-] Stationary (0), surfbeat (1) or non-hydrostatic (2)
-      character(slen)                     :: wavemodel_str          = ' '                  !  
+      character(slen)                     :: wavemodel_str          = ' '                  !
       integer                             :: cyclic                 = -123                 !  [-] Turn on cyclic boundary conditions
       integer                             :: swave                  = -123                 !  [-] Turn on short waves
       integer                             :: lwave                  = -123                 !  [-] Turn on short wave forcing on NLSW equations and boundary conditions
@@ -95,15 +95,15 @@ module params
       double precision                    :: g                      = -123                 !  [ms^-2] Gravitational acceleration
       double precision                    :: rho                    = -123                 !  [kgm^-3] Density of water
       double precision                    :: depthscale             = -123                 !  [-] (advanced)  depthscale of (lab)test simulated, affects eps, hmin, hswitch and dzmax
-      
+
       ! [Section] Initial conditions
       double precision                  :: zs0                      = -123                 !  [m] Inital water level
       character(slen)                   :: zsinitfile               = 'abc'                !  [file] Name of inital water level file
       integer                           :: hotstartflow             = -123                 !  [-] (advanced) Switch for hotstart flow conditions with pressure gradient balanced by wind and bed stress
-      
+
       ! [Section] Wave boundary condition parameters
       integer                           :: wbctype                  = -123                 !  [name] New wave boundary condition type
-      character(slen)                   :: wbctype_str              = ' '                  !  [-] 
+      character(slen)                   :: wbctype_str              = ' '                  !  [-]
       integer                           :: instat                   = -123                 !  [name] Old wave boundary condition type
       character(slen)                   :: instat_str               = ' '                  !  [-] Wave boundary condition type
       double precision                  :: taper                    = -123                 !  [s] Spin-up time of wave boundary conditions, in morphological time
@@ -122,7 +122,7 @@ module params
       character(slen)                   :: rightwave_str            = ' '                  !  [-] old name for lateralwav
       integer                           :: bclwonly                 = -123                 !  [-] (advanced,silent) switch to run boundary conditions with long waves only
       integer                           :: Sfold                    = -123                 !  [-] (advanced,silent) switch to run secoond order boundary conditions with Sf instead of Sfp
-      
+
       ! [Section] Wave-spectrum boundary condition parameters
       character(slen)                   :: bcfile                   = 'abc'                !  [file] Name of spectrum file
       integer                           :: random                   = -123                 !  [-] (advanced) Switch to enable random seed for instat = jons, swan or vardens boundary conditions
@@ -149,9 +149,9 @@ module params
       integer                           :: back                     = -123                 !  [name] Switch for boundary at bay side
       character(slen)                   :: back_str                 =  ' '                 !
       integer                           :: ARC                      = -123                 !  [-] (advanced) Switch for active reflection compensation at seaward boundary
-      double precision                  :: order                    = -123                 !  [-] (advanced) Switch for order of wave steering, 
+      double precision                  :: order                    = -123                 !  [-] (advanced) Switch for order of wave steering,
       ! first order wave steering (short wave energy only), second oder wave steering (bound long wave corresponding to short wave forcing is added)
-      integer                           :: highcomp                 = -123                 !  [-] (advanced) Switch for including the bound super harmonics in the boundary conditions, 
+      integer                           :: highcomp                 = -123                 !  [-] (advanced) Switch for including the bound super harmonics in the boundary conditions,
       integer                           :: freewave                 = -123                 !  [-] (advanced) Switch for free wave propagation 0 = use cg (default); 1 = use sqrt(gh) in instat = ts_2
       double precision                  :: epsi                     = -123                 !  [-] (advanced) Ratio of mean current to time varying current through offshore boundary
       integer                           :: nc                       = -123                 !  [-] (advanced,silent) Smoothing distance for estimating umean (defined as nr of cells)
@@ -219,7 +219,7 @@ module params
       character(slen)                   :: bedfriction_str          =  ' '                 !
       double precision                  :: bedfriccoef              = -123                 !  [-] Bed friction coefficient
       character(slen)                   :: bedfricfile              = 'abc'                !  [file] Bed friction file (valid for all bed friction coefficients)
-      integer                           :: dynamrough               = -123                 !  [-] (advanced) Switch to enable dynamic updating of roughness field 
+      logical                           :: dynamrough               = .False.                 !  [-] (advanced) Switch to enable dynamic updating of roughness field
       double precision                  :: maxcf                    = -123                 !  [-] max dimensionless friction coefficient (only for Manning and White-Colebrook)
       double precision                  :: nuh                      = -123                 !  [m^2s^-1] Horizontal background viscosity
       double precision                  :: nuhfac                   = -123                 !  [-] (advanced) Viscosity switch for roller induced turbulent horizontal viscosity
@@ -270,7 +270,7 @@ module params
 
       ! [Section] Non-hydrostatic correction parameters
       integer                           :: solver                   = -123                 !  [name] (advanced) Solver used to solve the linear system
-      character(slen)                   :: solver_str               =  ' '                 ! 
+      character(slen)                   :: solver_str               =  ' '                 !
       integer                           :: solver_maxit             = -123                 !  [-] (advanced) Maximum number of iterations in the linear sip solver
       double precision                  :: solver_acc               = -123                 !  [-] (advanced) accuracy with respect to the right-hand side used
                                                                                            !                 in the following termination criterion:
@@ -302,7 +302,7 @@ module params
       double precision                  :: ws                       = 0.02d0               !  [m/s] average fall velocity (is computed in morphevolution)
       double precision                  :: sedcal(99)               = -123                 !  [-] (advanced) Sediment transport calibration coefficient per grain type
       double precision                  :: ucrcal(99)               = -123                 !  [-] (advanced) Critical velocity calibration coefficient per grain type
-      
+
       ! [Section] Sediment transport parameters
       integer                           :: waveform                 = -123                 !  [name] Wave shape model
       character(slen)                   :: waveform_str             =  ' '                 !
@@ -343,10 +343,10 @@ module params
       integer                           :: bdslpeffdir              = -123                 !  [name] Modify the direction of the sediment transport based on the bed slope
       double precision                  :: bdslpeffdirfac           = -123                 !  [-] Calibration factor in the modification of the direction
       double precision                  :: ci                       = -123                 !  [-] (advanced) Mass coefficient in Shields inertia term
-      double precision                  :: phit                     = -123                 !  [-] (advanced) Phase lag angle in Nielsen transport equation 
+      double precision                  :: phit                     = -123                 !  [-] (advanced) Phase lag angle in Nielsen transport equation
       integer*4                         :: incldzdx                 = -123                 !  [-] (advanced,silent) Turn on or off dzsdx term in Shields
       integer*4                         :: inclrelweight            = -123                 !  [-] (advanced,silent) Turn on or off infilitration/exfiltration effect on particle weight
-      integer*4                         :: streaming                = -123                 !  [-] (advanced,silent) Turn on or off streaming contribution in Nielsen 2006 
+      integer*4                         :: streaming                = -123                 !  [-] (advanced,silent) Turn on or off streaming contribution in Nielsen 2006
       real*8                            :: uprushfac                = -123                 !  [-] (advanced,silent) Factor to increase uprush transport
       real*8                            :: backwashfac              = -123                 !  [-] (advanced,silent) Factor to increase backwash transport
       real*8                            :: yturb                    = -123                 !  [-] (advanced,silent) factor for distribution of near-bed turbulence into bed load and suspended load transport
@@ -395,7 +395,7 @@ module params
       character(slen)                   :: tspoints                 = 'abc'                !  [-] (advanced) Name of file containing timings of point output
       character(slen)                   :: tsmean                   = 'abc'                !  [-] (advanced) Name of file containing timings of mean, max, min and var output
       integer                           :: nglobalvar               = -123                 !  [-] Number of global output variables (as specified by user)
-      character(maxnamelen)             :: globalvars(numvars)      = 'abc'                !  [-] (advanced) Mnems of global output variables, 
+      character(maxnamelen)             :: globalvars(numvars)      = 'abc'                !  [-] (advanced) Mnems of global output variables,
       ! not per se the same size as nglobalvar (invalid variables, defaults)
       integer                           :: nmeanvar                 = -123                 !  [-] Number of mean, min, max, var output variables
       character(maxnamelen)             :: meanvars(numvars)        = 'abc'                !  [-] (advanced) Mnems of mean output variables (by variables)
@@ -406,7 +406,7 @@ module params
       integer, pointer              :: pointtypes(:) => NULL()                                   !  [-] (advanced) Point types (0 = point, 1 = rugauge)
       double precision, pointer     :: xpointsw(:) => NULL()                                     !  (advanced) world x-coordinate of output points
       double precision, pointer     :: ypointsw(:) => NULL()                                     !  (advanced) world y-coordinate of output points
-           
+
       integer                           :: nrugdepth                = -123                 !  [-] (advanced) Number of depths to compute runup in runup gauge
       double precision                  :: rugdepth(9999)             = -123               !  [m] (advanced) Minimum depth for determination of last wet point in runup gauge
       integer                           :: outputformat             = OUTPUTFORMAT_DEBUG   !  [name] (advanced) Output file format
@@ -476,7 +476,7 @@ module params
       character(slen)                   :: mpiboundary_str          =  ' '                 !
       integer                           :: mmpi                     = -123                 !  [-] (advanced) Number of domains in cross-shore direction when manually specifying mpi domains
       integer                           :: nmpi                     = -123                 !  [-] (advanced) Number of domains in alongshore direction when manually specifying mpi domains
-      
+
       ! [Section] Constants, not read in params.txt
       double precision                  :: px                       = 4.d0*atan(1.d0)      !  [-] Pi
       complex(kind(0.0d0))              :: compi                    = -123                 !  [-] Imaginary unit
@@ -522,7 +522,7 @@ contains
       ! Collections of default sets
       par%useXBeachGSettings    = readkey_int ('params.txt','useXBeachGSettings',     0,0,1,strict=.true.,silent=.true.)
       ! par%useXBeachGSettings = 1
-      !      
+      !
       !
       ! Backward compatibility
       call check_instat_backward_compatibility(par)
@@ -542,16 +542,16 @@ contains
           else
              call parmapply('wavemodel',3, par%wavemodel, par%wavemodel_str)
           endif
-      elseif (par%wavemodel /= -123) then 
+      elseif (par%wavemodel /= -123) then
          ! if already determined with backward compatibility (instat)
          if (par%wavemodel == 0) then
              call writelog('l','','               wavemodel =stationary')
-         elseif (par%wavemodel == 1) then  
+         elseif (par%wavemodel == 1) then
              call writelog('l','','               wavemodel =surfbeat')
          else
              call writelog('l','','               wavemodel =nonh')
         endif
-      elseif (par%wavemodel == -123) then   
+      elseif (par%wavemodel == -123) then
          ! no wavemodel determined -> error
          call writelog('lse','(a)','Error: XBeach cannot run without a hydrodynamic type')
          call writelog('lse','(a)','       Set wavemodel to stationary, surfbeat or nonh')
@@ -607,7 +607,7 @@ contains
                call writelog('lws','(a)','Set model to ny=0')
                call halt_program
             endif
-         endif  
+         endif
          par%posdwn= readkey_dbl('params.txt','posdwn', 1.d0,     -1.d0,     1.d0)
          if (par%setbathy .ne. 1) then
             par%depfile = readkey_name('params.txt','depfile',required=.true.)
@@ -742,7 +742,7 @@ contains
       ! Wave boundary condition parameters
       call writelog('l','','--------------------------------')
       call writelog('l','','Wave boundary condition parameters: ')
-      !      
+      !
       ! New method: wbctype
       if (isSetParameter('params.txt','wbctype')) then
         call setallowednames('params',       WBCTYPE_PARAMS,       &
@@ -757,30 +757,30 @@ contains
         'ts_nonh',    WBCTYPE_TS_NONH)
         call setoldnames('0','1','2','3','4','5','6','7', '8', '9')
         call parmapply('wbctype', 1, par%wbctype, par%wbctype_str)
-      elseif (par%wbctype /= -123) then 
+      elseif (par%wbctype /= -123) then
           ! if already determined with backward compatibility (instat)
          if (par%wbctype == WBCTYPE_PARAMS) then
              call writelog('l','','                 wbctype =params')
          elseif (par%wbctype == WBCTYPE_PARAMETRIC) then
              call writelog('l','','                 wbctype =parametric')
-         elseif (par%wbctype == WBCTYPE_SWAN) then  
+         elseif (par%wbctype == WBCTYPE_SWAN) then
              call writelog('l','','                 wbctype =swan')
-         elseif (par%wbctype == WBCTYPE_VARDENS) then  
+         elseif (par%wbctype == WBCTYPE_VARDENS) then
              call writelog('l','','                 wbctype =vardens')
-         elseif (par%wbctype == WBCTYPE_OFF) then  
+         elseif (par%wbctype == WBCTYPE_OFF) then
              call writelog('l','','                 wbctype =off')
-         elseif (par%wbctype == WBCTYPE_JONS_TABLE) then  
+         elseif (par%wbctype == WBCTYPE_JONS_TABLE) then
              call writelog('l','','                 wbctype =jonstable')
-         elseif (par%wbctype == WBCTYPE_REUSE) then  
+         elseif (par%wbctype == WBCTYPE_REUSE) then
              call writelog('l','','                 wbctype =reuse')
-         elseif (par%wbctype == WBCTYPE_TS_1) then  
+         elseif (par%wbctype == WBCTYPE_TS_1) then
              call writelog('l','','                 wbctype =ts_1')
-         elseif (par%wbctype == WBCTYPE_TS_2) then  
+         elseif (par%wbctype == WBCTYPE_TS_2) then
              call writelog('l','','                 wbctype =ts_2')
-         elseif (par%wbctype == WBCTYPE_TS_NONH) then  
+         elseif (par%wbctype == WBCTYPE_TS_NONH) then
              call writelog('l','','                 wbctype =ts_nonh')
         endif
-      else  
+      else
          ! no wbctype determined -> error
          call writelog('lse','(a)','Error: XBeach cannot run without a type of boundary condition')
          call writelog('lse','(a)','       Set wbctype')
@@ -860,8 +860,8 @@ contains
          call check_file_exist('boun_U.bcf')
       endif
       !
-      ! If Tlong is defined: than bichromatic waves        
-      if (isSetParameter('params.txt','Tlong')) then 
+      ! If Tlong is defined: than bichromatic waves
+      if (isSetParameter('params.txt','Tlong')) then
          par%Tlong = readkey_dbl ('params.txt','Tlong',    80.d0,     20.d0,   300.d0)
       endif
       !
@@ -906,7 +906,7 @@ contains
          if (par%wbctype==WBCTYPE_SWAN) then
             par%dthetaS_XB  = readkey_dbl ('params.txt','dthetaS_XB',   0.0d0,      -360.d0,    360.0d0,strict=.true. )
          endif
-         ! 
+         !
          par%wbcversion = readkey_int ('params.txt','wbcversion', 3, 1, 3,strict=.true.,silent=.true.)  ! wbcversion defaults to 3
          !
          if (par%wbcversion>2) then
@@ -959,13 +959,13 @@ contains
       else
          call parmapply('back',2,par%back,par%back_str)
       endif
-      
+
       ! Error for wlevel
       if ((par%front == FRONT_WLEVEL) .or. (par%back == BACK_WLEVEL)) then
          call writelog('lse','','Error: wlevel no longer supported. Change front and/or back boundary condition.')
          call halt_program
       endif
-      
+
       ! others
       par%ARC         = readkey_int ('params.txt','ARC',      1,              0,       1       ,strict=.true.)
       par%order       = readkey_dbl ('params.txt','order',    2.d0,           1.d0,    2.d0    ,strict=.true.)
@@ -1032,19 +1032,19 @@ contains
          call setoldnames('1','2','3','4','5')
          if (par%wavemodel == WAVEMODEL_STATIONARY) then
             call parmapply('break',2,par%break,par%break_str) ! default: baldock
-            par%gamma    = readkey_dbl ('params.txt','gamma',   0.78d0,     0.4d0,     0.9d0)   
-            par%gammax   = readkey_dbl ('params.txt','gammax',   0.6d0,      .4d0,      5.d0)   
+            par%gamma    = readkey_dbl ('params.txt','gamma',   0.78d0,     0.4d0,     0.9d0)
+            par%gammax   = readkey_dbl ('params.txt','gammax',   0.6d0,      .4d0,      5.d0)
          elseif (par%wavemodel == WAVEMODEL_SURFBEAT) then
             call parmapply('break',3,par%break,par%break_str) ! default: roelvink2
-            par%gamma    = readkey_dbl ('params.txt','gamma',   0.55d0,     0.4d0,     0.9d0)   
-            par%gammax   = readkey_dbl ('params.txt','gammax',   2.d0,      .4d0,      5.d0)  
+            par%gamma    = readkey_dbl ('params.txt','gamma',   0.55d0,     0.4d0,     0.9d0)
+            par%gammax   = readkey_dbl ('params.txt','gammax',   2.d0,      .4d0,      5.d0)
          else
          endif
          if (par%break == BREAK_ROELVINK_DALY) then
             par%gamma2   = readkey_dbl ('params.txt','gamma2',   0.3d0,     0.0d0,     0.5d0)
          endif
          par%alpha        = readkey_dbl ('params.txt','alpha',   1.0d0,     0.5d0,     2.0d0)
-         par%n            = readkey_dbl ('params.txt','n',       10.0d0,     5.0d0,    20.0d0) 
+         par%n            = readkey_dbl ('params.txt','n',       10.0d0,     5.0d0,    20.0d0)
          par%delta        = readkey_dbl ('params.txt','delta',   0.0d0,     0.0d0,     1.0d0,strict=.true.)
          par%wavfriccoef  = readkey_dbl ('params.txt','fw',       0.d0,   0d0,      1.0d0)
          ! try to read a wave friction file
@@ -1138,44 +1138,44 @@ contains
          par%bedfriccoef = -999.d0
       endif
       par%dynamrough   = readkey_int ('params.txt','dynamicroughness ',0    ,      0,             1,silent=.true.)
-      
+      par%dynamrough   = .false.
       par%maxcf   = readkey_dbl ('params.txt','maxcf',     0.04d0,     0.0d0,   1.0d0)  ! max cf, only used for Manning and White Colebrook (Chezy: 15)
       par%nuh     = readkey_dbl ('params.txt','nuh',       0.1d0,     0.0d0,   1.0d0)
       par%nuhfac  = readkey_dbl ('params.txt','nuhfac',    1.0d0,     0.0d0,   1.0d0)
       par%nuhv    = readkey_dbl ('params.txt','nuhv',      1.d0,      1.d0,    20.d0,silent=.true.)
       par%smag    = readkey_int ('params.txt','smag',      1,         0,       1,strict=.true.)
-      
+
       if (par%gwflow ==1) then
          if(par%useXBeachGSettings==1) then
             ! default on in XBeach-G!
-            par%friction_infiltration  = readkey_int('params.txt','friction_infiltration',1,0,1, strict=.true.) 
+            par%friction_infiltration  = readkey_int('params.txt','friction_infiltration',1,0,1, strict=.true.)
          else
-            par%friction_infiltration  = readkey_int('params.txt','friction_infiltration',0,0,1, silent=.true.,strict=.true.) 
+            par%friction_infiltration  = readkey_int('params.txt','friction_infiltration',0,0,1, silent=.true.,strict=.true.)
          endif
       else
          par%friction_infiltration  = 0
       endif
       par%friction_turbulence    = readkey_int('params.txt','friction_turbulence'  ,0,0,1, silent=.true.,strict=.true.)
-      if (par%friction_turbulence==1) then 
+      if (par%friction_turbulence==1) then
          par%gamma_turb             = readkey_dbl ('params.txt','gamma_turb', 1.d0, 0.d0, 2.d0)
       endif
-      
+
       call setallowednames('none', CF_ACC_NONE, &
                            'mccall', CF_ACC_MCCALL,  &
                            'nielsen',CF_ACC_NIELSEN)
       if(par%useXBeachGSettings==1) then
          ! Default should be MCCALL in XBeach-G
-         call parmapply('friction_acceleration',2,par%friction_acceleration,par%friction_acceleration_str)  
+         call parmapply('friction_acceleration',2,par%friction_acceleration,par%friction_acceleration_str)
       else
          call parmapply('friction_acceleration',1,par%friction_acceleration,par%friction_acceleration_str,silent=.true.)
       endif
-      
+
       if(par%friction_acceleration==CF_ACC_MCCALL) then
-         par%ci          = readkey_dbl ('params.txt','ci',1.0d0,    0.5d0,   1.5d0) 
+         par%ci          = readkey_dbl ('params.txt','ci',1.0d0,    0.5d0,   1.5d0)
       elseif (par%friction_acceleration==CF_ACC_NIELSEN) then
-         par%phit        = readkey_dbl ('params.txt','phit',25.0d0,    0.00d0,  90.0d0) 
+         par%phit        = readkey_dbl ('params.txt','phit',25.0d0,    0.00d0,  90.0d0)
       endif
-      
+
       !
       !
       ! Coriolis force parameters
@@ -1324,7 +1324,7 @@ contains
          else
             call parmapply('form',5,par%form, par%form_str)
          endif
-         
+
          if (par%wavemodel==WAVEMODEL_STATIONARY .or. par%wavemodel==WAVEMODEL_SURFBEAT) then
             call setallowednames('ruessink_vanrijn',  WAVEFORM_RUESSINK_VANRIJN,  &
                                  'vanthiel',          WAVEFORM_VANTHIEL)
@@ -1351,7 +1351,7 @@ contains
                                  'lagrangian', TURBADV_LAGRANGIAN,  &
                                  'eulerian',   TURBADV_EULERIAN)
             call parmapply('turbadv',1,par%turbadv,par%turbadv_str)
-            
+
          else
             par%sws      = 0
             par%lws      = 1
@@ -1362,7 +1362,7 @@ contains
             par%turb     = TURB_WAVE_AVERAGED     ! note, needed in case we want to use lwt ... Better solution still waiting
             par%turbadv  = TURBADV_LAGRANGIAN
          endif
-         
+
          ! Parameters for gravel-type equations
          if(par%form==FORM_NIELSEN2006 .or. &
             par%form==FORM_MCCALL_VANRIJN .or. &
@@ -1372,13 +1372,13 @@ contains
             par%form==FORM_WONG_PARKER .or. &
             par%form==FORM_FL_VB .or. &
             par%form==FORM_FREDSOE_DEIGAARD) then
-            
+
             if(par%form==FORM_NIELSEN2006) then
                par%Ctrans   = readkey_dbl ('params.txt','Ctrans',12d0,  0d0,  30d0)
                par%thetcr   = readkey_dbl ('params.txt','thetcr ',0.05d0,    0.00d0,   1.0d0)
                par%phaselag = readkey_int ('params.txt','phaselag',    0,    0,   1)
                if (par%phaselag==1) then
-                  par%phit     = readkey_dbl ('params.txt','phit   ',25.00d0,    0.00d0,  90.0d0) 
+                  par%phit     = readkey_dbl ('params.txt','phit   ',25.00d0,    0.00d0,  90.0d0)
                endif
                call setallowednames('constant',          SEDFRICFAC_CONSTANT,     &
                                     'flowfricfac',       SEDFRICFAC_FLOWFRIC,  &
@@ -1388,10 +1388,10 @@ contains
                call setoldnames('0','1','2','3','4')
                call parmapply('sedfricfac',1,par%sedfricfac,par%sedfricfac_str)
                if (par%sedfricfac==SEDFRICFAC_SWART) then
-                  par%Arms     = readkey_dbl ('params.txt','Arms', 10.d0, 0.d0, 100.d0) 
+                  par%Arms     = readkey_dbl ('params.txt','Arms', 10.d0, 0.d0, 100.d0)
                endif
                if (par%sedfricfac==SEDFRICFAC_CONSTANT) then
-                  par%fsed     = readkey_dbl ('params.txt','fsed', 0.025d0, 0.005d0, 0.05d0) 
+                  par%fsed     = readkey_dbl ('params.txt','fsed', 0.025d0, 0.005d0, 0.05d0)
                endif
                par%streaming  = readkey_int ('params.txt','streaming', 0,   0,   1,silent=.true.,strict=.true.)
             else ! all other transport equations
@@ -1400,19 +1400,19 @@ contains
                par%uprushfac    = readkey_dbl ('params.txt','uprushfac', 1.d0, 0.d0, 3.d0)
                par%backwashfac  = readkey_dbl ('params.txt','backwashfac', 1.d0, 0.d0, 3.d0)
                par%incldzdx     = readkey_int('params.txt','incldzdx',0,0,1,strict=.true.,silent=.true.)
-               if (par%gwflow==1) then 
-                  par%inclrelweight = readkey_int('params.txt','inclrelweight',1,0,1,strict=.true.) 
+               if (par%gwflow==1) then
+                  par%inclrelweight = readkey_int('params.txt','inclrelweight',1,0,1,strict=.true.)
                else
                   par%inclrelweight = 0
                endif
             endif
-            
+
             call setallowednames('none',             SLOPECORR_NONE,     &
                                  'nielsen',          SLOPECORR_NIELSEN,  &
                                  'fredsoe_deigaard', SLOPECORR_FREDSOE_DEIGAARD)
             call setoldnames('0','1','2')
             call parmapply('slopecorr',3,par%slopecorr,par%sedfricfac_str)
-            
+
             par%sus      = readkey_int ('params.txt','sus    ',0,           0,            0,strict=.true.)
             par%bed      = readkey_int ('params.txt','bed    ',1,           1,            1,strict=.true.)
             par%bulk     = readkey_int ('params.txt','bulk   ',0,           0,            0,strict=.true.)
@@ -1429,7 +1429,7 @@ contains
             par%sus      = readkey_int ('params.txt','sus    ',1,           0,            1,strict=.true.)
             par%bed      = readkey_int ('params.txt','bed    ',1,           0,            1,strict=.true.)
             par%bulk     = readkey_int ('params.txt','bulk   ',0,           0,            1,strict=.true.)
-            par%facsl    = readkey_dbl ('params.txt','facsl  ',  0.15d0,       0.d0, 1.6d0)   
+            par%facsl    = readkey_dbl ('params.txt','facsl  ',  0.15d0,       0.d0, 1.6d0)
             par%z0       = readkey_dbl ('params.txt','z0     ',0.006d0,    0.0001d0,   0.05d0)
             par%smax     = readkey_dbl ('params.txt','smax',   -1.d0,    -1.d0,   3.d0)       !changed 28/11 and back 10/2
             call setallowednames('none',              BDSLPEFFMAG_NONE,           &
@@ -1478,10 +1478,10 @@ contains
          par%bermslopetransport = readkey_int ('params.txt','bermslopetransport', 0, 0, 1,strict=.true.,silent=.true.)
          if (par%bermslopetransport==1) then
             par%bermslopebed = readkey_int ('params.txt','bermslopebed', 1, 0,  1,strict=.true.)
-            par%bermslopesus = readkey_int ('params.txt','bermslopesus', 1, 0,  1,strict=.true.)        
+            par%bermslopesus = readkey_int ('params.txt','bermslopesus', 1, 0,  1,strict=.true.)
             par%bermslope   = readkey_dbl ('params.txt','bermslope ',0.1d0,     0.00d0,   1.0d0)
             par%bermslopefac = readkey_dbl ('params.txt','bermslopefac ',15.0d0, 0.00d0, 30.0d0)
-            if (par%wavemodel==WAVEMODEL_SURFBEAT) then 
+            if (par%wavemodel==WAVEMODEL_SURFBEAT) then
                par%bermslopegamma = readkey_dbl ('params.txt','bermslopegamma ',1.0d0, 0.75d0, 1.5d0)
                par%bermslopedepth = readkey_dbl ('params.txt','bermslopedepth ',0.0d0, 0.0d0, 0.5d0)
             else
@@ -1526,7 +1526,7 @@ contains
          par%D50      = readkey_dblvec('params.txt','D50',par%ngd,size(par%D50),0.0002d0,0.00005d0,0.0008d0)
          par%D90      = readkey_dblvec('params.txt','D90',par%ngd,size(par%D90),0.0003d0,0.00010d0,0.0015d0)
       endif
-         
+
       if (par%sedtrans==1) then
          par%rhos     = readkey_dbl ('params.txt','rhos',  2650d0,     2400.d0,  2800.d0)
          par%dzg1     = readkey_dbl ('params.txt','dzg',    0.1d0,      0.01d0,     1.d0)
@@ -1556,7 +1556,7 @@ contains
          if (par%ny == 0) then
             par%lsgrad   = readkey_dbl ('params.txt','lsgrad', 0.0d0,       -0.1d0,     .1d0,silent=.true.)
          else
-            par%lsgrad = 0.0d0 
+            par%lsgrad = 0.0d0
          endif
          par%hswitch  = readkey_dbl ('params.txt','hswitch',0.1d0,      0.01d0,    1.0d0)
          par%dzmax    = readkey_dbl ('params.txt','dzmax  ',0.05d0,    0.00d0,   1.0d0)
@@ -1697,7 +1697,7 @@ contains
       ! Wave numerics parameters
       call writelog('l','','--------------------------------')
       call writelog('l','','Wave numerics parameters: ')
-      
+
       call setallowednames('upwind_1',      SCHEME_UPWIND_1,      &
       'lax_wendroff',  SCHEME_LAX_WENDROFF,  &
       'upwind_2',      SCHEME_UPWIND_2,      &
@@ -1809,7 +1809,7 @@ contains
          par%form==FORM_WONG_PARKER .or. &
          par%form==FORM_FL_VB .or. &
          par%form==FORM_FREDSOE_DEIGAARD) then
-            
+
          ! These transport equations only work in 1D
          if (par%ny>0) then
             call writelog('lswe','(a)','Error: The following sediment transport equations cannot be used in 2DH simulations:')
@@ -1821,7 +1821,7 @@ contains
             call writelog('lswe','(a)','wong_parker')
             call writelog('lswe','(a)','fl_vb')
             call writelog('lswe','(a)','fredsoe_deigaard')
-            call writelog('lswe','(a)','Change to other transport equation or 1D model') 
+            call writelog('lswe','(a)','Change to other transport equation or 1D model')
             call halt_program
          endif
       endif
@@ -1872,12 +1872,12 @@ contains
          par%morphology=0
          par%avalanching=0
       endif
-      ! 
+      !
       ! Wavemodel and wbctypes: warnings
       ! swave and nonh
       if (par%swave == 1 .and. par%wavemodel == WAVEMODEL_NONH) then
             call writelog('lsw','(a)','Warning: swave with wavemodel = nonh not possible')
-            par%swave     = 0 
+            par%swave     = 0
       endif
       !
       ! Wave model and wbctypes: errors (halt program)
@@ -2020,8 +2020,8 @@ contains
          call writelog('lws','(a)','Bermslope transport option should not be applied in 2DH models')
          call writelog('lws','(a)','Bermslope correction only applied in M-direction')
          !call halt_program
-      endif  
-      
+      endif
+
       !
       !
       ! If using tide, epsi should be on
@@ -2033,21 +2033,21 @@ contains
       endif
       !
       ! is not using nonh with front = nonh_1d
-      if (par%front==FRONT_NONH_1D) then  
+      if (par%front==FRONT_NONH_1D) then
         if (par%wavemodel /= WAVEMODEL_NONH) then
             call writelog('lws','','Warning: not recommended to use front = nonh_1d without wavemodel = nonh')
         endif
       endif
       !
       ! is using nonh without front = nonh_1d
-      if (par%front/=FRONT_NONH_1D) then  
+      if (par%front/=FRONT_NONH_1D) then
         if (par%wavemodel == WAVEMODEL_NONH) then
             call writelog('lws','','Warning: automatically changing front to nonh_1d with wavemodel = nonh')
             par%front = FRONT_NONH_1D
         endif
       endif
       ! is using wavemodel = stat without front = abs_1d
-      if (par%front/=FRONT_ABS_1D) then  
+      if (par%front/=FRONT_ABS_1D) then
         if (par%wavemodel == WAVEMODEL_STATIONARY ) then
             call writelog('lws','','Warning: automatically changing front to abs_1d with wavemodel = stationary')
             par%front = FRONT_ABS_1D
@@ -2134,7 +2134,7 @@ contains
          call halt_program
       endif
 #endif
-      ! 
+      !
       ! Warm-beam scheme does not work for stationary wave model
       if (par%wavemodel==WAVEMODEL_STATIONARY) then
          if (par%scheme==SCHEME_LAX_WENDROFF) then
@@ -2148,11 +2148,11 @@ contains
          endif
       elseif (par%wavemodel==WAVEMODEL_SURFBEAT .and. par%single_dir==1) then
          if (par%scheme==SCHEME_WARMBEAM) then
-            call writelog('lws','','Warning: Warming and Beam [scheme=warmbeam] scheme is not supported in stationary solver')  
+            call writelog('lws','','Warning: Warming and Beam [scheme=warmbeam] scheme is not supported in stationary solver')
             call writelog('lws','','         (wave direction) component of single_dir wave model. Wave directions will be solved')
             call writelog('lws','','         using 2nd order upwind scheme. Wave group propagation component will be soved using')
             call writelog('lws','','         Warming and Beam scheme')
-         endif   
+         endif
       endif
       !
       ! Lax-Wendroff not yet supported in curvilinear
@@ -2161,8 +2161,8 @@ contains
          call writelog('lws','','Warning: Lax Wendroff [scheme=lax_wendroff] scheme is not supported, changed')
          call writelog('lws','','         to Warming and Beam [scheme=SCHEME_WARMBEAM]')
       endif
-      ! 
-      
+      !
+
       !
       ! Wave-current interaction with non-stationary waves still experimental
       if (par%wavemodel == WAVEMODEL_STATIONARY .and. par%wci==1) then
@@ -2817,16 +2817,16 @@ contains
       endif
 
    end subroutine readPointPosition
-   
+
    subroutine check_instat_backward_compatibility(par)
       use logging_module
       use mnemmodule
       use readkey_module
-      
+
       implicit none
-      
+
       type(parameters), intent(inout)          :: par
-      
+
       if (isSetParameter('params.txt','nonh') .or. isSetParameter('params.txt','instat')) then
             call writelog('l','','--------------------------------')
             call writelog('l','','Backward compatibility:')
@@ -2843,7 +2843,7 @@ contains
             if (par%nonh==1) then
                 par%wavemodel = WAVEMODEL_NONH
                 par%wavemodel_str = 'nonh'
-            endif 
+            endif
       else
       endif
       !
@@ -2873,132 +2873,132 @@ contains
             ! 1) INSTAT = STAT
             if (par%instat==INSTAT_STAT) then
                 if (par%nonh==1) then
-                   par%wavemodel       = WAVEMODEL_NONH     
-                   par%wavemodel_str   = 'nonh' 
+                   par%wavemodel       = WAVEMODEL_NONH
+                   par%wavemodel_str   = 'nonh'
                 else
-                   par%wavemodel       = WAVEMODEL_STATIONARY     
-                   par%wavemodel_str   = 'stationary' 
+                   par%wavemodel       = WAVEMODEL_STATIONARY
+                   par%wavemodel_str   = 'stationary'
                 endif
-                par%wbctype         = WBCTYPE_PARAMS    
+                par%wbctype         = WBCTYPE_PARAMS
                 par%wbctype_str    = 'params'
             endif
             ! 2) INSTAT = TS_1
             if (par%instat==INSTAT_TS_1) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT     
-                par%wavemodel_str   = 'surfbeat' 
-                par%wbctype         = WBCTYPE_TS_1    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_TS_1
                 par%wbctype_str    = 'ts_1'
             endif
-            ! 3) INSTAT = TS_2            
+            ! 3) INSTAT = TS_2
             if (par%instat==INSTAT_TS_2) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT     
-                par%wavemodel_str   = 'surfbeat' 
-                par%wbctype         = WBCTYPE_TS_2    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_TS_2
                 par%wbctype_str    = 'ts_2'
             endif
             ! 4) INSTAT = OFF
-            if (par%instat==INSTAT_OFF .and. par%wavemodel == WAVEMODEL_NONH)   then  
-                par%wavemodel       = WAVEMODEL_NONH    
-                par%wavemodel_str   = 'nonh'       
-                par%wbctype         = WBCTYPE_OFF    
+            if (par%instat==INSTAT_OFF .and. par%wavemodel == WAVEMODEL_NONH)   then
+                par%wavemodel       = WAVEMODEL_NONH
+                par%wavemodel_str   = 'nonh'
+                par%wbctype         = WBCTYPE_OFF
                 par%wbctype_str    = 'off'
             elseif (par%instat==INSTAT_OFF) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_OFF    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_OFF
                 par%wbctype_str    = 'off'
             endif
             ! 5) INSTAT = BICHROM
-            if (par%instat==INSTAT_BICHROM)   then  
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_PARAMS    
+            if (par%instat==INSTAT_BICHROM)   then
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_PARAMS
                 par%wbctype_str    = 'params'
                 ! But we should define the Tlong
-                if (isSetParameter('params.txt','Tlong')) then 
+                if (isSetParameter('params.txt','Tlong')) then
                     ! we will read it in later
                 else
                     par%Tlong = 80
                 endif
             endif
             ! 6) INSTAT = STAT_TABLE
-            if (par%instat==INSTAT_STAT_TABLE)   then  
+            if (par%instat==INSTAT_STAT_TABLE)   then
                 par%wavemodel       = WAVEMODEL_STATIONARY
-                par%wavemodel_str   = 'stationary'   
-                par%wbctype         = WBCTYPE_JONS_TABLE    
+                par%wavemodel_str   = 'stationary'
+                par%wbctype         = WBCTYPE_JONS_TABLE
                 par%wbctype_str    = 'jons_table'
             endif
             ! 7) INSTAT = ts_nonh
-            if (par%instat==INSTAT_TS_NONH)   then  
+            if (par%instat==INSTAT_TS_NONH)   then
                 par%wavemodel       = WAVEMODEL_NONH
-                par%wavemodel_str   = 'nonh'   
-                par%wbctype         = WBCTYPE_TS_NONH    
+                par%wavemodel_str   = 'nonh'
+                par%wbctype         = WBCTYPE_TS_NONH
                 par%wbctype_str    = 'ts_nonh'
             endif
             !
             ! Conditions with spectra
             ! 1) INSTAT_JONS
-            if (par%instat==INSTAT_JONS .and. par%wavemodel == WAVEMODEL_NONH)   then  
-                par%wavemodel       = WAVEMODEL_NONH    
-                par%wavemodel_str   = 'nonh'       
-                par%wbctype         = WBCTYPE_PARAMETRIC    
+            if (par%instat==INSTAT_JONS .and. par%wavemodel == WAVEMODEL_NONH)   then
+                par%wavemodel       = WAVEMODEL_NONH
+                par%wavemodel_str   = 'nonh'
+                par%wbctype         = WBCTYPE_PARAMETRIC
                 par%wbctype_str    = 'parametric'
             elseif (par%instat==INSTAT_JONS) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_PARAMETRIC    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_PARAMETRIC
                 par%wbctype_str    = 'parametric'
             endif
             !
             ! 2) INSTAT_JONS_TABLE
-            if (par%instat==INSTAT_JONS_TABLE .and. par%wavemodel == WAVEMODEL_NONH)   then  
-                par%wavemodel       = WAVEMODEL_NONH    
+            if (par%instat==INSTAT_JONS_TABLE .and. par%wavemodel == WAVEMODEL_NONH)   then
+                par%wavemodel       = WAVEMODEL_NONH
                 par%wavemodel_str   = 'nonh'
-                par%wbctype         = WBCTYPE_JONS_TABLE    
+                par%wbctype         = WBCTYPE_JONS_TABLE
                 par%wbctype_str    = 'jons_table'
             elseif (par%instat==INSTAT_JONS_TABLE) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_JONS_TABLE    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_JONS_TABLE
                 par%wbctype_str    = 'jons_table'
             endif
             !
             ! 3) INSTAT = SWAN
-            if (par%instat==INSTAT_SWAN .and. par%wavemodel == WAVEMODEL_NONH)   then  
-                par%wavemodel       = WAVEMODEL_NONH    
+            if (par%instat==INSTAT_SWAN .and. par%wavemodel == WAVEMODEL_NONH)   then
+                par%wavemodel       = WAVEMODEL_NONH
                 par%wavemodel_str   = 'nonh'
-                par%wbctype         = WBCTYPE_SWAN    
+                par%wbctype         = WBCTYPE_SWAN
                 par%wbctype_str    = 'swan'
             elseif (par%instat==INSTAT_SWAN) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_SWAN    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_SWAN
                 par%wbctype_str    = 'swan'
             endif
             !
             ! 4) INSTAT = VARDENS
-            if (par%instat==INSTAT_VARDENS .and. par%wavemodel == WAVEMODEL_NONH)   then  
-                par%wavemodel       = WAVEMODEL_NONH    
+            if (par%instat==INSTAT_VARDENS .and. par%wavemodel == WAVEMODEL_NONH)   then
+                par%wavemodel       = WAVEMODEL_NONH
                 par%wavemodel_str   = 'nonh'
-                par%wbctype         = WBCTYPE_VARDENS    
+                par%wbctype         = WBCTYPE_VARDENS
                 par%wbctype_str    = 'vardens'
             elseif (par%instat==INSTAT_VARDENS) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_VARDENS    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_VARDENS
                 par%wbctype_str    = 'vardens'
             endif
-            ! 
+            !
             ! Other: re-use
-            if (par%instat==INSTAT_REUSE .and. par%wavemodel == WAVEMODEL_NONH)   then  
-                par%wavemodel       = WAVEMODEL_NONH    
+            if (par%instat==INSTAT_REUSE .and. par%wavemodel == WAVEMODEL_NONH)   then
+                par%wavemodel       = WAVEMODEL_NONH
                 par%wavemodel_str   = 'nonh'
-                par%wbctype         = WBCTYPE_REUSE    
+                par%wbctype         = WBCTYPE_REUSE
                 par%wbctype_str    = 'reuse'
             elseif (par%instat==INSTAT_REUSE) then
-                par%wavemodel       = WAVEMODEL_SURFBEAT    
-                par%wavemodel_str   = 'surfbeat'   
-                par%wbctype         = WBCTYPE_REUSE    
+                par%wavemodel       = WAVEMODEL_SURFBEAT
+                par%wavemodel_str   = 'surfbeat'
+                par%wbctype         = WBCTYPE_REUSE
                 par%wbctype_str    = 'reuse'
             endif
       endif
