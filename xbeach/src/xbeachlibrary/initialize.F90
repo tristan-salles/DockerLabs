@@ -849,8 +849,12 @@ contains
       allocate(s%breaking(1:s%nx+1,1:s%ny+1))
       
       ! vegetation initialization
-      allocate(s%vegtype(1:s%nx+1,1:s%ny+1))
-      allocate(s%Cdrag(1:s%nx+1,1:s%ny+1))
+      !allocate(s%vegtype(1:s%nx+1,1:s%ny+1))
+     ! allocate(s%nsecveg(1:s%nx+1,1:s%ny+1))
+      !allocate(s%Cdveg(1:s%nx+1,1:s%ny+1,1:3))
+      !allocate(s%ahveg(1:s%nx+1,1:s%ny+1,1:3))
+      !allocate(s%bveg(1:s%nx+1,1:s%ny+1,1:3))
+      !allocate(s%Nveg(1:s%nx+1,1:s%ny+1,1:3))
       
       ! added bed roughness due to second order effects
       allocate(s%taubx_add(1:s%nx+1,1:s%ny+1))
@@ -952,9 +956,13 @@ contains
          s%breaking = 0
       endif
       
-      if (par%vegetation==1) then
-         s%vegtype = 0
-      endif
+      !if (par%vegetation==1) then
+      !   s%vegtype = 0
+      !   s%Cdveg   = 0.d0
+      !   s%ahveg   = 0.d0
+      !   s%bveg    = 0.d0
+      !   s%Nveg    = 0.d0
+      !endif
 
       !
       ! set-up tide and surge waterlevels
@@ -1333,7 +1341,7 @@ contains
                   tempr=sum(s%pbbed(i,j,m,1:par%ngd))
                 if (abs(1.d0-tempr)>0.000001d0) then
                      ! Maybe fix this warning if in combination with structures
-                     call writelog('lws','(a,i,a,i,a,i,a)',' Warning: Resetting sum of sediment fractions in point (',&
+                     call writelog('lws','(a,i0,a,i0,a,i0,a)',' Warning: Resetting sum of sediment fractions in point (',&
                      i,',',j,') layer ,',m,&
                      ' to equal unity.')
                      if (tempr<=tiny(0.d0)) then    ! In case cell has zero sediment (i.e. only hard structure)

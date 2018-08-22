@@ -29,19 +29,24 @@ module bedroughness_module
    implicit none
    save
 
-   real*8,dimension(:,:),allocatable,private  :: kru,krv,kru50,krv50,kru90,krv90
-   real*8,dimension(:,:),allocatable,private  :: urms_upd,u2_upd
-   real*8,dimension(:,:),allocatable,private  :: facbl,blphi,infilb,Ubed,Ventilation
-   real*8,dimension(:,:),allocatable,private  :: ueuf,uevf,vevf,veuf
-   real*8,dimension(:,:),allocatable,private  :: ueuold,uevold,vevold,veuold
-   real*8,dimension(:,:),allocatable,private  :: dudtsmooth,dvdtsmooth
-   real*8,dimension(:,:),allocatable,private  :: shieldsu,shieldsv
-   real*8,dimension(2),              private  :: dtold
-   real*8,                           private  :: delta,rhogdelta
-
-
+   real*8,dimension(:,:),allocatable,private           :: kru,krv,kru50,krv50,kru90,krv90
+   real*8,dimension(:,:),allocatable,private           :: urms_upd,u2_upd
+   real*8,dimension(:,:),allocatable,private           :: facbl,blphi,infilb,Ubed,Ventilation
+   real*8,dimension(:,:),allocatable,private           :: ueuf,uevf,vevf,veuf
+   real*8,dimension(:,:),allocatable,private           :: ueuold,uevold,vevold,veuold
+   real*8,dimension(:,:),allocatable,private           :: dudtsmooth,dvdtsmooth
+   real*8,dimension(:,:),allocatable,private           :: shieldsu,shieldsv
+   real*8,dimension(2),              private           :: dtold
+   real*8,                           private           :: delta,rhogdelta
+   logical,dimension(:,:),allocatable,private          :: isveggie
+   double precision,dimension(:,:),allocatable,private :: nman0
+   
+   double precision, private                           :: droot = -0.5d0
+   double precision, private                           :: dstem = 0.5d0  
+   double precision, private                           :: nmanmin = -123
    public bedroughness_init
    public bedroughness_update
+
 
 contains
 
@@ -71,17 +76,30 @@ contains
          s%cfu = s%bedfriccoef
          s%cfv = s%bedfriccoef
        case (BEDFRICTION_MANNING)
+           
+        if ( par%dynamrough ) then    
+           allocate (nman0(s%nx+1,s%ny+1))
+           allocate (isveggie(s%nx+1,s%ny+1))  
+           nman0=s%bedfriccoef
+           nmanmin=minval( s%bedfriccoef )           
+           where (s%bedfriccoef>nmanmin)
+               isveggie=.true.
+           elsewhere
+               isveggie=.false.
+           endwhere
+        endif
+        
          where(s%wetu==1)
             s%cfu = par%g*s%bedfriccoef**2/s%hu**(1.d0/3)
-            s%cfu = min(s%cfu,0.1d0)
+            s%cfu = min(s%cfu,par%maxcf)
          elsewhere
-            s%cfu = 0.1d0
+            s%cfu = par%maxcf
          endwhere
          where(s%wetv==1)
             s%cfv = par%g*s%bedfriccoef**2/s%hv**(1.d0/3)
-            s%cfv= min(s%cfv,0.1d0)
+            s%cfv= min(s%cfv,par%maxcf)
          elsewhere
-            s%cfv = 0.1d0
+            s%cfv = par%maxcf
          endwhere
        case (BEDFRICTION_WHITE_COLEBROOK_GRAINSIZE)
          allocate (kru(s%nx+1,s%ny+1))
@@ -113,15 +131,15 @@ contains
          endif
          where(s%wetu==1)
             s%cfu = par%g/(18*log10(12*max(s%hu,kru)/kru))**2
-            s%cfu = min(s%cfu,0.1d0)
+            s%cfu = min(s%cfu,par%maxcf)
          elsewhere
-            s%cfu = 0.1d0
+            s%cfu = par%maxcf
          endwhere
          where(s%wetv==1)
             s%cfv = par%g/(18*log10(12*max(s%hv,krv)/krv))**2
-            s%cfv = min(s%cfv,0.1d0)
+            s%cfv = min(s%cfv,par%maxcf)
          elsewhere
-            s%cfv = 0.1d0
+            s%cfv = par%maxcf
          endwhere
        case (BEDFRICTION_WHITE_COLEBROOK)
          allocate (kru(s%nx+1,s%ny+1))
@@ -130,15 +148,15 @@ contains
          krv = s%bedfriccoef
          where(s%wetu==1)
             s%cfu = par%g/(18*log10(12*max(s%hu,kru)/kru))**2
-            s%cfu = min(s%cfu,0.1d0)
+            s%cfu = min(s%cfu,par%maxcf)
          elsewhere
-            s%cfu = 0.1d0
+            s%cfu = par%maxcf
          endwhere
          where(s%wetv==1)
             s%cfv = par%g/(18*log10(12*max(s%hv,krv)/krv))**2
-            s%cfv = min(s%cfv,0.1d0)
+            s%cfv = min(s%cfv,par%maxcf)
          elsewhere
-            s%cfv = 0.1d0
+            s%cfv = par%maxcf
          endwhere
       end select
 
@@ -159,6 +177,8 @@ contains
       type(spacepars),target                      :: s
       integer                                     :: i,j
 
+
+   
       select case (par%bedfriction)
 
        case(BEDFRICTION_CHEZY)
@@ -168,17 +188,32 @@ contains
        case (BEDFRICTION_MANNING)
          ! C = H**(1/6)/n
          ! cf = g/C**2 = g/(hu**(1/6)/n)**2 = g*n**2/hu**(1/3)
+           
+         if (par%dynamrough)  then
+!             if ( maxval( abs(s%sedero)) > 0.1d0 ) then
+!                dstem=0.5d0
+!             end if
+             where ((isveggie) .and. (s%sedero .gt. 0d0))         
+                    s%bedfriccoef=nmanmin + min( max( (dstem-s%sedero)/dstem , 0.d0), 1.0d0) * (nman0 - nmanmin)                 
+             elsewhere ((isveggie) .and. (s%sedero .lt. droot))          
+                      s%bedfriccoef = 0.02d0
+                      isveggie = .false.        
+             elsewhere (isveggie)
+                      s%bedfriccoef=nmanmin + min( max( (droot-s%sedero)/droot , 0.d0), 1.0d0) * (nman0 - nmanmin)                
+             endwhere
+         endif 
+         
          where(s%wetu==1)
             s%cfu = par%g*s%bedfriccoef**2/s%hu**(1.d0/3)
-            s%cfu = min(s%cfu,0.1d0)
+            s%cfu = min(s%cfu,par%maxcf)
          elsewhere
-            s%cfu = 0.1d0
+            s%cfu = par%maxcf
          endwhere
          where(s%wetv==1)
             s%cfv = par%g*s%bedfriccoef**2/s%hv**(1.d0/3)
-            s%cfv = min(s%cfv,0.1d0)
+            s%cfv = min(s%cfv,par%maxcf)
          elsewhere
-            s%cfv = 0.1d0
+            s%cfv = par%maxcf
          endwhere
        case (BEDFRICTION_WHITE_COLEBROOK_GRAINSIZE)
          if (par%ngd>1) then
@@ -212,26 +247,26 @@ contains
             s%cfu = par%g/(18*log10(12*max(s%hu,kru)/kru))**2
             s%cfu = min(s%cfu,0.1d0)
          elsewhere
-            s%cfu = 0.1d0
+            s%cfu = par%maxcf
          endwhere
          where(s%wetv==1)
             s%cfv = par%g/(18*log10(12*max(s%hv,krv)/krv))**2
-            s%cfv = min(s%cfv,0.1d0)
+            s%cfv = min(s%cfv,par%maxcf)
          elsewhere
-            s%cfv = 0.1d0
+            s%cfv = par%maxcf
          endwhere
        case (BEDFRICTION_WHITE_COLEBROOK)
          where(s%wetu==1)
             s%cfu = par%g/(18*log10(12*max(s%hu,kru)/kru))**2
-            s%cfu = min(s%cfu,0.1d0)
+            s%cfu = min(s%cfu,par%maxcf)
          elsewhere
-            s%cfu = 0.1d0
+            s%cfu = par%maxcf
          endwhere
          where(s%wetv==1)
             s%cfv = par%g/(18*log10(12*max(s%hv,krv)/krv))**2
-            s%cfv = min(s%cfv,0.1d0)
+            s%cfv = min(s%cfv,par%maxcf)
          elsewhere
-            s%cfv = 0.1d0
+            s%cfv = par%maxcf
          endwhere
       end select
 

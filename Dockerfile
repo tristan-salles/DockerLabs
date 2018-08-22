@@ -4,32 +4,32 @@ FROM pyreefmodel/pyreef-dependencies-docker
 MAINTAINER Tristan Salles
 
 WORKDIR /build
-RUN pip install -e git+https://github.com/hplgit/odespy.git#egg=odespy
-WORKDIR /build/src/odespy
-RUN python setup.py install
+#RUN pip install -e git+https://github.com/hplgit/odespy.git#egg=odespy
+#WORKDIR /build/src/odespy
+#RUN python setup.py install
 
 WORKDIR /build
-RUN pip install -U statsmodels
+#RUN pip install -U statsmodels
 
 # cd wavesed; f2py --f90exec=mpif90 -I. -c -m ocean ocean.f90
 
-WORKDIR /build
-RUN git clone https://github.com/pyReef-model/pyReefCore.git
-RUN pip install -e /build/pyReefCore
+#WORKDIR /build
+#RUN git clone https://github.com/pyReef-model/pyReefCore.git
+#RUN pip install -e /build/pyReefCore
 
-RUN mkdir /usr/local/COVE
-RUN ls -la /usr/local/
+#RUN mkdir /usr/local/COVE
+#RUN ls -la /usr/local/
 
-COPY  COVE/ /usr/local/COVE/
+#COPY  COVE/ /usr/local/COVE/
 
-RUN ls -la /usr/local/
+#RUN ls -la /usr/local/
 
-RUN ls -la /usr/local/COVE
+#RUN ls -la /usr/local/COVE
 
-RUN cd /usr/local/COVE/driver_files && \
-  make -f spiral_bay_make.make && \
-  mv spiral_bay.out cove && \
-  mv cove /usr/local/bin
+#RUN cd /usr/local/COVE/driver_files && \
+#  make -f spiral_bay_make.make && \
+#  mv spiral_bay.out cove && \
+#  mv cove /usr/local/bin
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
@@ -69,25 +69,25 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/
 RUN chmod +x /usr/local/bin/tini
 
 # Copy cluster configuration
-#RUN mkdir /root/.ipython
-#COPY profile_mpi /root/.ipython/profile_mpi
+RUN mkdir /root/.ipython
+COPY profile_mpi /root/.ipython/profile_mpi
 
-RUN mkdir /usr/local/class
-COPY class/ /usr/local/class/
+#RUN mkdir /usr/local/class
+#COPY class/ /usr/local/class/
 
-RUN mkdir /usr/local/pracs
-COPY practicals/ /usr/local/pracs/
+#RUN mkdir /usr/local/pracs
+#COPY practicals/ /usr/local/pracs/
 
 RUN mkdir /workspace && \
     mkdir /workspace/volume
 
-RUN mv /usr/local/class /workspace
-RUN mv /usr/local/pracs /workspace
+#RUN mv /usr/local/class /workspace
+#RUN mv /usr/local/pracs /workspace
 
-RUN mv /workspace/class /workspace/classroom
+#RUN mv /workspace/class /workspace/classroom
 
-RUN cd /workspace/classroom/wavesed && \
-  f2py --f90exec=mpif90 -I. -c -m ocean ocean.f90
+#RUN cd /workspace/classroom/wavesed && \
+#  f2py --f90exec=mpif90 -I. -c -m ocean ocean.f90
 
 COPY run.sh /build
 RUN chmod +x /build/run.sh
@@ -102,5 +102,5 @@ WORKDIR /workspace
 EXPOSE 8888
 ENTRYPOINT ["/usr/local/bin/tini", "--"]
 
-ENV LD_LIBRARY_PATH=/workspace/volume/pyReefCore/pyReefCore/libUtils:/build/pyReefCore/pyReefCore/libUtils
+#ENV LD_LIBRARY_PATH=/workspace/volume/pyReefCore/pyReefCore/libUtils:/build/pyReefCore/pyReefCore/libUtils
 CMD /build/run.sh

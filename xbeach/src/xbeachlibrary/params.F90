@@ -219,6 +219,8 @@ module params
       character(slen)                   :: bedfriction_str          =  ' '                 !
       double precision                  :: bedfriccoef              = -123                 !  [-] Bed friction coefficient
       character(slen)                   :: bedfricfile              = 'abc'                !  [file] Bed friction file (valid for all bed friction coefficients)
+      integer                           :: dynamrough               = -123                 !  [-] (advanced) Switch to enable dynamic updating of roughness field 
+      double precision                  :: maxcf                    = -123                 !  [-] max dimensionless friction coefficient (only for Manning and White-Colebrook)
       double precision                  :: nuh                      = -123                 !  [m^2s^-1] Horizontal background viscosity
       double precision                  :: nuhfac                   = -123                 !  [-] (advanced) Viscosity switch for roller induced turbulent horizontal viscosity
       double precision                  :: nuhv                     = -123                 !  [-] (advanced,silent) Longshore viscosity enhancement factor, following Svendsen (?)
@@ -300,7 +302,7 @@ module params
       double precision                  :: ws                       = 0.02d0               !  [m/s] average fall velocity (is computed in morphevolution)
       double precision                  :: sedcal(99)               = -123                 !  [-] (advanced) Sediment transport calibration coefficient per grain type
       double precision                  :: ucrcal(99)               = -123                 !  [-] (advanced) Critical velocity calibration coefficient per grain type
-
+      
       ! [Section] Sediment transport parameters
       integer                           :: waveform                 = -123                 !  [name] Wave shape model
       character(slen)                   :: waveform_str             =  ' '                 !
@@ -340,7 +342,6 @@ module params
       integer                           :: bdslpeffini              = -123                 !  [name] Modify the critical shields parameter based on the bed slope
       integer                           :: bdslpeffdir              = -123                 !  [name] Modify the direction of the sediment transport based on the bed slope
       double precision                  :: bdslpeffdirfac           = -123                 !  [-] Calibration factor in the modification of the direction
-      double precision                  :: bermslope                = -123                 !  [-] Swash zone slope for (semi-) reflective beaches
       double precision                  :: ci                       = -123                 !  [-] (advanced) Mass coefficient in Shields inertia term
       double precision                  :: phit                     = -123                 !  [-] (advanced) Phase lag angle in Nielsen transport equation 
       integer*4                         :: incldzdx                 = -123                 !  [-] (advanced,silent) Turn on or off dzsdx term in Shields
@@ -359,6 +360,14 @@ module params
       real*8                            :: fsed                     = -123                 !  [-] (advanced,silent) constant sediment friction factor
       integer*4                         :: phaselag                 = -123                 !  [-] (advanced,silent) 1 = phase lag, 0 = no phase lag
       real*8                            :: thetcr                   = -123                 !  [-] (advanced,silent) critical shields param
+      integer*4                         :: bermslopetransport       = -123                 !  [-] (advanced,silent) Turn on or off bermslope swash transport model
+      integer*4                         :: bermslopebed             = -123                 !  [-] (advanced,silent) Turn on or off bermslope swash transport model for bed load
+      integer*4                         :: bermslopesus             = -123                 !  [-] (advanced,silent) Turn on or off bermslope swash transport model for suspended load
+      double precision                  :: bermslope                = -123                 !  [-] (advanced,silent) Swash zone slope for (semi-) reflective beaches
+      double precision                  :: bermslopefac             = -123                 !  [-] (advanced,silent) Bed slope transport factor for bermslope model
+      double precision                  :: bermslopegamma           = -123                 !  [-] (advanced,silent) Wave height - water depth ratio to turn on bermslope model in surf-beat
+      double precision                  :: bermslopedepth           = -123                 !  [-] (advanced,silent) Water depth to turn on on bermslope model in stationary and nonh
+      double precision                  :: alfaD50                  = -123                 !  [-] (advanced,silent) additional sensitivity to D50, similar to DUROS-TA
 
       ! [Section] Morphology parameters
       double precision                  :: morfac                   = -123                 !  [-] Morphological acceleration factor
@@ -677,16 +686,8 @@ contains
          par%alfa  = readkey_dbl('params.txt','alfa',  0.d0,   0.d0,   360.d0)
          par%posdwn= readkey_dbl('params.txt','posdwn', 1.d0,     -1.d0,     1.d0)
       endif
-        ! Bermslope only in 1D
-        if(par%bermslope>0) then
-        if(par%ny>0) then
-            call writelog('lws','(a)','bermslope cannot be applied in 2DH models')
-            call writelog('lws','(a)','Set model to ny=0')
-            call halt_program
-        endif
-        endif  
       ! Q3d grid
-         par%nz = readkey_int ('params.txt','nz',    1,        1,     100)
+      par%nz = readkey_int ('params.txt','nz',    1,        1,     100)
       ! Wave directional grid
       if(par%swave==1) then
          par%thetamin = readkey_dbl ('params.txt','thetamin', -90.d0,    -360.d0,  360.d0,required=.true.)
@@ -798,7 +799,7 @@ contains
 #ifdef USEMPI
          call xmpi_bcast(filetype,toall)
 #endif
-      elseif (par%instat==WBCTYPE_REUSE) then
+      elseif (par%wbctype==WBCTYPE_REUSE .or. par%instat == INSTAT_REUSE) then
          ! See if this is reusing nonhydrostatic, or hydrostatic boundary conditions
          ! Note, check file length is done after recomputation of tstop due to morfacopt
          ! at the end of this subroutine.
@@ -968,7 +969,7 @@ contains
       ! others
       par%ARC         = readkey_int ('params.txt','ARC',      1,              0,       1       ,strict=.true.)
       par%order       = readkey_dbl ('params.txt','order',    2.d0,           1.d0,    2.d0    ,strict=.true.)
-      par%highcomp    = readkey_int ('params.txt','highcomp',    0,           0,       1       ,silent=.true.)
+      par%highcomp    = readkey_int ('params.txt','highcomp',    0,           0,       1                     )
       par%freewave    = readkey_int ('params.txt','freewave', 0,              0,       1       ,strict=.true.)
       par%epsi        = readkey_dbl ('params.txt','epsi',     -1.d0,          -1.d0,   0.2d0   )
       par%nc          = readkey_int ('params.txt','nc',       par%ny+1,       1,       par%ny+1,strict=.true.,silent=.true.)
@@ -1136,7 +1137,9 @@ contains
          par%bedfricfile = ''  ! empty string so doesn't go searching for file called 'abc'
          par%bedfriccoef = -999.d0
       endif
-
+      par%dynamrough   = readkey_int ('params.txt','dynamicroughness ',0    ,      0,             1,silent=.true.)
+      
+      par%maxcf   = readkey_dbl ('params.txt','maxcf',     0.04d0,     0.0d0,   1.0d0)  ! max cf, only used for Manning and White Colebrook (Chezy: 15)
       par%nuh     = readkey_dbl ('params.txt','nuh',       0.1d0,     0.0d0,   1.0d0)
       par%nuhfac  = readkey_dbl ('params.txt','nuhfac',    1.0d0,     0.0d0,   1.0d0)
       par%nuhv    = readkey_dbl ('params.txt','nuhv',      1.d0,      1.d0,    20.d0,silent=.true.)
@@ -1275,9 +1278,9 @@ contains
             par%nhlay        = readkey_dbl('params.txt','nhlay' ,0.33d0,0.d0,1.d0)
          else
             if(par%useXBeachGSettings==0) then
-               par%nhbreaker    = readkey_int('params.txt','nhbreaker' ,2,0,2,strict=.true.)
+               par%nhbreaker    = readkey_int('params.txt','nhbreaker' ,1,0,1,strict=.true.)
             else
-               par%nhbreaker    = readkey_int('params.txt','nhbreaker' ,3,0,3,strict=.true.)
+               par%nhbreaker    = readkey_int('params.txt','nhbreaker' ,1,0,3,strict=.true.)
             endif
             par%dispc        = readkey_dbl('params.txt','dispc' ,-1.0d0,0.1d0,2.0d0)
          endif
@@ -1322,7 +1325,7 @@ contains
             call parmapply('form',5,par%form, par%form_str)
          endif
          
-         if (par%swave==1) then
+         if (par%wavemodel==WAVEMODEL_STATIONARY .or. par%wavemodel==WAVEMODEL_SURFBEAT) then
             call setallowednames('ruessink_vanrijn',  WAVEFORM_RUESSINK_VANRIJN,  &
                                  'vanthiel',          WAVEFORM_VANTHIEL)
             call setoldnames('1','2')
@@ -1456,7 +1459,6 @@ contains
          else
             par%reposeangle         = readkey_dbl ('params.txt','reposeangle',  35.d0,     20.d0,     60.d0)
          endif
-         par%bermslope   = readkey_dbl ('params.txt','bermslope ',0.0d0,     0.00d0,   1.0d0,silent=.true.)         
          par%tsfac    = readkey_dbl ('params.txt','tsfac',   0.1d0,    0.01d0,   1.d0)
          par%Tsmin    = readkey_dbl ('params.txt','Tsmin  ',0.5d0,     0.01d0,   10.d0)
          par%facDc    = readkey_dbl ('params.txt','facDc  ',1.0d0,     0.00d0,   1.0d0)
@@ -1473,6 +1475,23 @@ contains
             par%rheeA               = readkey_dbl ('params.txt','rheeA',         0.75d0,   0.75d0, 2.d0) ! Between 3/4 and 1/(1-n), see paper Van Rhee (2010)
             par%pormax              = readkey_dbl ('params.txt','pormax',        0.5d0,    0.3d0, 0.6d0)
          endif
+         par%bermslopetransport = readkey_int ('params.txt','bermslopetransport', 0, 0, 1,strict=.true.,silent=.true.)
+         if (par%bermslopetransport==1) then
+            par%bermslopebed = readkey_int ('params.txt','bermslopebed', 1, 0,  1,strict=.true.)
+            par%bermslopesus = readkey_int ('params.txt','bermslopesus', 1, 0,  1,strict=.true.)        
+            par%bermslope   = readkey_dbl ('params.txt','bermslope ',0.1d0,     0.00d0,   1.0d0)
+            par%bermslopefac = readkey_dbl ('params.txt','bermslopefac ',15.0d0, 0.00d0, 30.0d0)
+            if (par%wavemodel==WAVEMODEL_SURFBEAT) then 
+               par%bermslopegamma = readkey_dbl ('params.txt','bermslopegamma ',1.0d0, 0.75d0, 1.5d0)
+               par%bermslopedepth = readkey_dbl ('params.txt','bermslopedepth ',0.0d0, 0.0d0, 0.5d0)
+            else
+               par%bermslopedepth = readkey_dbl ('params.txt','bermslopedepth ',1.0d0, 0.5d0, 1.5d0)
+            endif
+         else
+            par%bermslopebed = 0
+            par%bermslopesus = 0
+         endif
+         par%alfaD50    = readkey_dbl ('params.txt','alfaD50', 0.0d0, 0.0d0, 1.5d0, silent=.true.)
       endif
       !
       ! Q3D sediment transport parameters
@@ -1662,13 +1681,14 @@ contains
          call check_file_exist(par%veggiefile)
          par%veggiemapfile = readkey_name  ('params.txt', 'veggiemapfile'                    )
          call check_file_exist(par%veggiemapfile)
+         par%Trep          = readkey_dbl   ('params.txt','Trep',     1.d0,   0.01d0,    20.d0)
          par%vegnonlin     = readkey_int   ('params.txt', 'vegnonlin',0,0,1,silent=.true.)
          par%vegcanflo     = readkey_int   ('params.txt', 'vegcanflo',0,0,1,silent=.true.)
          par%veguntow      = readkey_int   ('params.txt', 'veguntow', 1,0,1,silent=.true.)
-         par%porcanflow    = readkey_int   ('params.txt', 'porcanflow', 0,0,1,silent=.true.)
+         par%porcanflow    = readkey_int   ('params.txt', 'porcanflow', 0,0,1)
          if (par%porcanflow ==1) then
-             par%Kp             = readkey_dbl ('params.txt','Kp',    0.0001d0,      0.d0,     1.d0, silent=.true.)
-             par%Cm             = readkey_dbl ('params.txt','Cm',    1.0d0,         0.d0,     2.d0, silent=.true.)
+             par%Kp             = readkey_dbl ('params.txt','Kp',    0.0001d0,      0.d0,     1.d0)
+             par%Cm             = readkey_dbl ('params.txt','Cm',    1.0d0,         0.d0,     2.d0)
          endif
          ! veggiefile routine should set nveg
       endif
@@ -1677,7 +1697,7 @@ contains
       ! Wave numerics parameters
       call writelog('l','','--------------------------------')
       call writelog('l','','Wave numerics parameters: ')
-
+      
       call setallowednames('upwind_1',      SCHEME_UPWIND_1,      &
       'lax_wendroff',  SCHEME_LAX_WENDROFF,  &
       'upwind_2',      SCHEME_UPWIND_2,      &
@@ -1716,7 +1736,11 @@ contains
       par%eps_sd  = readkey_dbl ('params.txt','eps_sd',  0.5d0,     0.000d0,      1.0d0)
       par%umin    = readkey_dbl ('params.txt','umin',    0.0d0,     0.0d0,        0.2d0)
       par%hmin    = readkey_dbl ('params.txt','hmin',    0.2d0,     0.001d0,      1.d0)
-      par%secorder = readkey_int('params.txt','secorder' ,par%nonh,0,1,strict=.true.)
+      if (par%wavemodel==WAVEMODEL_NONH) then
+         par%secorder = readkey_int('params.txt','secorder' ,1,0,1,strict=.true.)
+      else
+         par%secorder = readkey_int('params.txt','secorder' ,0,0,1,strict=.true.)
+      endif
       par%oldhu    = readkey_int('params.txt','oldhu' ,0,0,1,silent=.true.,strict=.true.)
       !
       !
@@ -1991,6 +2015,15 @@ contains
       endif
       !
       !
+      ! Bermslope only in 1D
+      if(par%bermslopetransport==1 .and. par%ny>2) then
+         call writelog('lws','(a)','Bermslope transport option should not be applied in 2DH models')
+         call writelog('lws','(a)','Bermslope correction only applied in M-direction')
+         !call halt_program
+      endif  
+      
+      !
+      !
       ! If using tide, epsi should be on
       if (par%tideloc>0) then
          if (par%epsi<-1.d0) then
@@ -2101,6 +2134,26 @@ contains
          call halt_program
       endif
 #endif
+      ! 
+      ! Warm-beam scheme does not work for stationary wave model
+      if (par%wavemodel==WAVEMODEL_STATIONARY) then
+         if (par%scheme==SCHEME_LAX_WENDROFF) then
+            par%scheme=SCHEME_UPWIND_2
+            call writelog('lws','','Warning: Lax Wendroff [scheme=lax_wendroff] scheme is not supported.')
+            call writelog('lws','','         Changed to 2nd order upwind [scheme=upwind_2]')
+         elseif (par%scheme==SCHEME_WARMBEAM) then
+            par%scheme=SCHEME_UPWIND_2
+            call writelog('lws','','Warning: Warming and Beam [scheme=warmbeam] scheme is not supported in wave stationary mode.')
+            call writelog('lws','','         Changed to 2nd order upwind [scheme=upwind_2]')
+         endif
+      elseif (par%wavemodel==WAVEMODEL_SURFBEAT .and. par%single_dir==1) then
+         if (par%scheme==SCHEME_WARMBEAM) then
+            call writelog('lws','','Warning: Warming and Beam [scheme=warmbeam] scheme is not supported in stationary solver')  
+            call writelog('lws','','         (wave direction) component of single_dir wave model. Wave directions will be solved')
+            call writelog('lws','','         using 2nd order upwind scheme. Wave group propagation component will be soved using')
+            call writelog('lws','','         Warming and Beam scheme')
+         endif   
+      endif
       !
       ! Lax-Wendroff not yet supported in curvilinear
       if (par%scheme==SCHEME_LAX_WENDROFF) then
@@ -2108,6 +2161,8 @@ contains
          call writelog('lws','','Warning: Lax Wendroff [scheme=lax_wendroff] scheme is not supported, changed')
          call writelog('lws','','         to Warming and Beam [scheme=SCHEME_WARMBEAM]')
       endif
+      ! 
+      
       !
       ! Wave-current interaction with non-stationary waves still experimental
       if (par%wavemodel == WAVEMODEL_STATIONARY .and. par%wci==1) then

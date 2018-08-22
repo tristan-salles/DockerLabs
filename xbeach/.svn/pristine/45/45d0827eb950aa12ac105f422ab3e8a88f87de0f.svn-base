@@ -86,6 +86,9 @@ module ncoutput_module
 
    ! Ships
    integer :: shipdimid
+   
+   ! Vegetation
+   integer :: vegdimid
 
    ! Q3D
    integer :: Q3Ddimid
@@ -275,7 +278,12 @@ contains
       if (par%nship .gt. 0) then
          NF90(nf90_def_dim(ncid, 'nship', par%nship, shipdimid))
       end if
-
+      
+      ! vegetation sections
+      if (par%vegetation .gt. 0) then
+         NF90(nf90_def_dim(ncid, 'nsecvegmax', s%nsecvegmax, vegdimid))
+      endif
+            
             ! write(*,*) 'Writing nz', par%nz
       if (par%nz .gt. 1) then
          NF90(nf90_def_dim(ncid, 'nz', par%nz, Q3Ddimid))
@@ -1632,6 +1640,8 @@ contains
          dimensionid = shipdimid
        case('par%nz')
          dimensionid = Q3Ddimid
+       case('s%nsecvegmax')
+         dimensionid = vegdimid
        case default
          call writelog('els','','Unknown dimension expression:'  // expression)
          stop 1

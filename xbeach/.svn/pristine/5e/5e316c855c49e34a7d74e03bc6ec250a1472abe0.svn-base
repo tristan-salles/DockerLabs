@@ -77,7 +77,7 @@ contains
          allocate (    vs(s%nx+1,s%ny+1))
          allocate (sinthm(s%nx+1,s%ny+1))
          allocate (costhm(s%nx+1,s%ny+1))
-
+        !
          if (par%secorder == 1  .or. par%wavemodel==WAVEMODEL_NONH) then
             allocate(vv_old(s%nx+1,s%ny+1)); vv_old = s%vv
             allocate(uu_old(s%nx+1,s%ny+1)); uu_old = s%uu
@@ -166,10 +166,10 @@ contains
 
       ! wwvv: added shift_ee
       ! R+D: ToDo, check needed
-#ifdef USEMPI
-      call xmpi_shift_ee(dvdy)
-      call xmpi_shift_ee(dudx)
-#endif
+!#ifdef USEMPI
+!      call xmpi_shift_ee(dvdy)
+!      call xmpi_shift_ee(dudx)
+!#endif
 
       ! Update bed roughness coefficient
       call bedroughness_update(s,par)
@@ -348,6 +348,12 @@ contains
          s%taubx = s%taubx + s%taubx_add  ! Account for infiltration etc. effects
       elsewhere
          s%taubx = 0.d0
+      endwhere
+      !
+      !
+      ! limit bed friction term to accelerate less than realistic value
+      where (abs(s%taubx)>100*par%g*par%rho*s%hu)
+         s%taubx = sign(1.d0,s%taubx)*100*par%g*par%rho*s%hu
       endwhere
       !
       ! Explicit Euler step momentum u-direction
@@ -587,6 +593,12 @@ contains
          s%tauby = s%tauby + s%tauby_add
       elsewhere
          s%tauby = 0.d0
+      endwhere
+      !
+      !
+      ! limit bed friction term to accelerate less than realistic value
+      where (abs(s%tauby)>100*par%g*par%rho*s%hv)
+         s%tauby = sign(1.d0,s%tauby)*100*par%g*par%rho*s%hv
       endwhere
       !
       ! Explicit Euler step momentum v-direction

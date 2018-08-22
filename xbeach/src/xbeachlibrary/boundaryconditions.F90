@@ -312,7 +312,7 @@ contains
                   endif
                   par%Hrms = Hm0/sqrt(2.d0)
                   ! set taper time to 1 second for new conditions (likewise in waveparams)
-                  par%taper = 1.d0
+                  par%taper = 0.d0
                   par%m = int(2*spreadpar)
                   if (par%morfacopt==1) then
                      bcendtime=bcendtime+bcdur/max(par%morfac,1.d0)
@@ -398,11 +398,17 @@ contains
       if (par%wavemodel==WAVEMODEL_STATIONARY) then
          ! Go over all excepted wbctypes (all the same)
          if (par%wbctype == WBCTYPE_PARAMS .or. par%wbctype == WBCTYPE_JONS_TABLE) then
-            do j=1,s%ny+1
-                s%ee(1,j,:) = e01*min(par%t/par%taper,1.0d0)
-                s%bi(1)     = 0.0d0
-                s%ui(1,j)   = 0.0d0
-            enddo
+            if(par%taper>tiny(0.d0)) then
+               do j=1,s%ny+1
+                  s%ee(1,j,:) = e01*min(par%t/par%taper,1.0d0)
+               enddo
+            else
+               do j=1,s%ny+1
+                  s%ee(1,j,:) = e01
+               enddo
+            endif
+            s%bi(1) = 0.d0
+            s%ui(1,:)   = 0.0d0
          else
          endif   ! Go over the different wbctypes for wavemodel = stationary
          !
@@ -1143,6 +1149,7 @@ contains
             endif ! par%front
 
          endif  ! xmpi_istop
+      endif ! par%wbctype/=WBCTYPE_OFF
          !
          ! Radiating boundary at x=nx*dx
          !
@@ -1173,12 +1180,10 @@ contains
             s%umean(s%nx,:) = 0.d0
             s%vmean(s%nx,:) = 0.d0
          endif
-
+         if (xmpi_isbot) then
          if (par%back==BACK_WALL) then
-            if (xmpi_isbot) then
                s%uu(s%nx,:) = 0.d0
                s%zs(s%nx+1,:) = s%zs(s%nx,:)
-            endif
             ! zs(nx+1,2:ny) = zs(nx+1,2:ny) + par%dt*hh(nx,2:ny)*uu(nx,2:ny)/(xu(nx+1)-xu(nx)) -par%dt*(hv(nx+1,2:ny+1)*vv(nx+1,2:ny+1)-hv(nx+1,1:ny)*vv(nx+1,1:ny))/(yv(2:ny+1)-yv(1:ny))
          elseif (par%back==BACK_ABS_1D) then
             !        umean(nx,:) = factime*uu(nx,:)+(1.d0-factime)*umean(nx,:)
@@ -1245,8 +1250,6 @@ contains
             enddo
          endif  !par%back
       endif !xmpi_isbot
-
-
       !
       ! Lateral tide boundary conditions
       !
